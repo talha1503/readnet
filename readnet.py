@@ -272,7 +272,7 @@ def get_model():
 
     # Automatically freeze the embedding. We should not be learning this
     for p in readnet.embed.parameters():
-        p.requires_grad = False
+        p.requires_grad = False 
     return readnet
 
 data_path = '../input/commonlitreadabilityprize/train.csv'
