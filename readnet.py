@@ -13,8 +13,7 @@ from fastai.text.all import *
 
 
 # Make sure to have your glove embeddings stored here
-root_dir = '.'
-
+root_dir = './'
 
 ## MODEL CODE ##
 
