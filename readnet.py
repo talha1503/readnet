@@ -242,8 +242,8 @@ def get_splits(data):
   return idx[:split], idx[split:]
 
 
-def get_dls(bs):
-  data = pd.read_csv(root_dir/'train.csv')
+def get_dls(data_path,bs):
+  data = pd.read_csv(data_path)
   txts = data.excerpt.tolist()
   x = prepare_txts_cut(txts, tokenizer)
   y = data.target.tolist()
@@ -276,8 +276,10 @@ def get_model():
 
     return readnet
 
-
-learn = Learner(dls=get_dls(), model=get_model(), loss_func=MSELossFlat())
+data_path = '../input/commonlitreadabilityprize/train.csv'
+batch_size = 8
+learn = Learner(dls=get_dls(data_path,batch_size), model=get_model(), loss_func=MSELossFlat())
 learn.lr_find()
 learn.fit_one_cycle(50, 3e-5)
+learn.save('./readnet_50')
 # Result MSE is about 0.40
