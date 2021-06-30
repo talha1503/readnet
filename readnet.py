@@ -186,7 +186,7 @@ class ReadNet(nn.Module):
 class GloveTokenizer:
     def __init__(self, num):
         words = pd.read_csv(
-            root_dir / f'glove.6B.{num}d.txt', header=None, sep=" ", quoting=csv.QUOTE_NONE, usecols=[0]
+            './glove.6B.100d.txt', header=None, sep=" ", quoting=csv.QUOTE_NONE, usecols=[0]
         ).values
         words = [word[0] for word in words]
         self.word2idx = {w: i for i, w in enumerate(words)}
