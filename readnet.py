@@ -141,7 +141,7 @@ class GloveEmbedding(nn.Module):
         # Make embedding
         self.embed = nn.Embedding(400_000 + 1, num)
         emb_w = pd.read_csv(
-            root_dir / f'glove.6B.{num}d.txt', header=None, sep=" ", quoting=csv.QUOTE_NONE
+            './glove.6B.100d.txt', header=None, sep=" ", quoting=csv.QUOTE_NONE
         ).values[:, 1:].astype('float64')
         emb_w = Tensor(emb_w)
         emb_w = torch.cat([emb_w, torch.zeros(1, num)], dim=0)
