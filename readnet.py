@@ -16,7 +16,7 @@ from fastai.text.all import *
 root_dir = './'
 
 ## MODEL CODE ##
-
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 class MultiHeadAttention(nn.Module):
     def __init__(self, d_model, num_heads, masked):
@@ -72,7 +72,7 @@ def pos_encode(x):
         enc_func = torch.sin if d % 2 == 0 else torch.cos
         addition[:,:,d] = enc_func(enc_base[:,d])
     if x.is_cuda:
-        addition = addition.cuda()
+        addition = addition.to(device)
     return x + addition
 
 
@@ -169,8 +169,8 @@ class ReadNet(nn.Module):
         if feats_sent is None: feats_sent = Tensor([])
         if feats_doc is None: feats_doc = Tensor([])
         if x.is_cuda:
-            feats_sent = feats_sent.cuda()
-            feats_doc = feats_doc.cuda()
+            feats_sent = feats_sent.to(device)
+            feats_doc = feats_doc.to(device)
         x = self.embed(x)
         b, d, s, m = x.shape
         x = x.reshape(b * d, s, m)
@@ -252,9 +252,10 @@ def get_dls(data_path,bs):
       tfms=[],
       splits=get_splits(data),
   )
-
+  
+  print("Starting to load data")
   dls = ds.dataloaders(batch_size=bs)
-
+  print("Data loading complete")
   return dls
 
 
@@ -267,7 +268,7 @@ def get_model():
         n_feats_sent=0,
         n_feats_doc=0,
     )
-    readnet = readnet.cuda()
+    readnet = readnet.to(device)
 
     # Automatically freeze the embedding. We should not be learning this
     for p in readnet.embed.parameters():
@@ -277,7 +278,9 @@ def get_model():
 data_path = '../input/commonlitreadabilityprize/train.csv'
 batch_size = 8
 learn = Learner(dls=get_dls(data_path,batch_size), model=get_model(), loss_func=MSELossFlat())
-learn.lr_find()
+# print("LR find begins")
+# learn.lr_find()
+print("Starting training")
 learn.fit_one_cycle(50, 3e-5)
 learn.save('./readnet_50')
 # Result MSE is about 0.40
